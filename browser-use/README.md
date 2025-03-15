@@ -1,0 +1,1 @@
+https://github.com/browser-use/web-ui?tab=readme-ov-file
