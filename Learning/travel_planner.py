@@ -4,27 +4,21 @@ from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.conditions import TextMentionTermination
 from autogen_agentchat.teams import RoundRobinGroupChat
 from autogen_agentchat.ui import Console
+from autogen_ext.models.openai import OpenAIChatCompletionClient
+
 
 # Custom Ollama Client to replace OpenAI
-class OllamaClient:
-    def __init__(self, model="llama3", base_url="http://localhost:11434"):
-        self.model = model
-        self.base_url = base_url
-        self.model_info = {"vision": False}  # Fake attribute to prevent AutoGen errors
-
-    async def chat(self, messages):
-        """ Simulates OpenAI's API response format for AutoGen compatibility """
-        prompt = "\n".join([msg["content"] for msg in messages])
-        response = requests.post(
-            f"{self.base_url}/api/generate",
-            json={"model": self.model, "prompt": prompt}
-        )
-        if response.status_code == 200:
-            return {"choices": [{"message": {"role": "assistant", "content": response.json().get("response", "")}}]}
-        return {"choices": [{"message": {"role": "assistant", "content": "Error: No response from Ollama"}}]}
-
-# Initialize Ollama client
-ollama_client = OllamaClient(model="llama3.2")
+ollama_client=OpenAIChatCompletionClient(
+        model="llama3.2:latest",
+        api_key="placeholder",
+        base_url="http://localhost:11434/v1",
+        model_info={
+            "function_calling": True,
+            "json_output": True,
+            "vision": False,
+            "family": "unknown"
+        }
+    )
 
 # Create AutoGen Agents
 planner_agent = AssistantAgent(
